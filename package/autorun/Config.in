@@ -1,0 +1,4 @@
+config BR2_PACKAGE_AUTORUN
+	bool "autorun"
+	help
+	  Simple init.d script to run /dev/mmcblk0p1/autorun.sh

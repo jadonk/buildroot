@@ -737,6 +737,7 @@ endmenu
 endmenu
 
 menu "Miscellaneous"
+source "package/autorun/Config.in"
 source "package/aespipe/Config.in"
 source "package/bc/Config.in"
 source "package/collectd/Config.in"
