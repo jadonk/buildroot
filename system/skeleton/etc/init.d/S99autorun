@@ -1,0 +1,19 @@
+#!/bin/sh
+#
+# Run autorun.sh on /dev/mmcblk0p1
+#
+
+case "$1" in
+  start|restart)
+ 	echo "Running /dev/mmcblk0p1/autorun.sh..."
+	/bin/mount /dev/mmcblk0p1 /mnt
+	[ -e /mnt/autorun.sh ] && . /mnt/autorun.sh
+	/bin/umount /mnt
+	;;
+  *)
+	echo "Usage: $0 {start}"
+	exit 1
+esac
+
+exit $?
+
