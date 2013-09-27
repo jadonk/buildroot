@@ -1,0 +1,60 @@
+uboot: set beaglebone config to be initramfs friendly
+
+A uEnv.txt file is a good substitute.
+
+Signed-of-by: Jason Kridner <jdk@ti.com>
+
+--- a/include/configs/am335x_evm.h	2013-09-27 20:57:38.000000000 +0000
++++ b/include/configs/am335x_evm.h	2013-09-27 21:13:45.000000000 +0000
+@@ -55,10 +55,10 @@
+ #ifndef CONFIG_SPL_BUILD
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"loadaddr=0x80200000\0" \
+-	"fdtaddr=0x80F80000\0" \
++	"fdtaddr=0x83FF0000\0" \
+ 	"fdt_high=0xffffffff\0" \
+ 	"rdaddr=0x81000000\0" \
+-	"bootdir=/boot\0" \
++	"bootdir=\0" \
+ 	"bootfile=uImage\0" \
+ 	"fdtfile=undefined\0" \
+ 	"console=ttyO0,115200n8\0" \
+@@ -71,7 +71,7 @@
+ 	"mmcdev=0\0" \
+ 	"mmcroot=/dev/mmcblk0p2 ro\0" \
+ 	"mmcrootfstype=ext4 rootwait\0" \
+-	"bootpart=0:2\0" \
++	"bootpart=0:1\0" \
+ 	"nandroot=ubi0:rootfs rw ubi.mtd=7,2048\0" \
+ 	"nandrootfstype=ubifs rootwait=1\0" \
+ 	"nandsrcaddr=0x280000\0" \
+@@ -112,6 +112,8 @@
+ 		"${optargs} " \
+ 		"root=${ramroot} " \
+ 		"rootfstype=${ramrootfstype}\0" \
++	"ramfsargs=setenv bootargs console=${console} " \
++		"${optargs}\0" \
+ 	"loadramdisk=load mmc ${mmcdev} ${rdaddr} ramdisk.gz\0" \
+ 	"loaduimage=load mmc ${bootpart} ${loadaddr} ${bootdir}/${bootfile}\0" \
+ 	"loadfdt=load mmc ${bootpart} ${fdtaddr} ${bootdir}/${fdtfile}\0" \
+@@ -137,6 +139,9 @@
+ 	"ramboot=echo Booting from ramdisk ...; " \
+ 		"run ramargs; " \
+ 		"bootm ${loadaddr} ${rdaddr} ${fdtaddr}\0" \
++	"ramfsboot=echo Booting from initramfs ...; " \
++		"run ramfsargs; " \
++		"bootm ${loadaddr} - ${fdtaddr}\0" \
+ 	"findfdt="\
+ 		"if test $board_name = A335BONE; then " \
+ 			"setenv fdtfile am335x-bone.dtb; fi; " \
+@@ -164,8 +169,9 @@
+ 		"fi;" \
+ 		"if run loaduimage; then " \
+ 			"run loadfdt;" \
+-			"run mmcboot;" \
++			"run ramfsboot;" \
+ 		"fi;" \
++		"run netboot;" \
+ 	"else " \
+ 		"run nandboot;" \
+ 	"fi;" \
