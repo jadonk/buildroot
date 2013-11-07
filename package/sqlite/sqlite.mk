@@ -4,7 +4,7 @@
 #
 ################################################################################
 
-SQLITE_VERSION = 3071700
+SQLITE_VERSION = 3080002
 SQLITE_SOURCE = sqlite-autoconf-$(SQLITE_VERSION).tar.gz
 SQLITE_SITE = http://www.sqlite.org/2013
 SQLITE_LICENSE = Public domain
@@ -41,6 +41,10 @@ SQLITE_CONF_ENV = CFLAGS="$(TARGET_CFLAGS) $(SQLITE_CFLAGS)"
 
 SQLITE_CONF_OPT = \
 	--localstatedir=/var
+
+ifeq ($(BR2_PREFER_STATIC_LIB),y)
+SQLITE_CONF_OPT += --enable-dynamic-extensions=no
+endif
 
 ifeq ($(BR2_TOOLCHAIN_HAS_THREADS),y)
 SQLITE_CONF_OPT += --enable-threadsafe

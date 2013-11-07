@@ -4,8 +4,7 @@
 #
 ################################################################################
 
-LOGROTATE_VERSION = 3.8.4
-LOGROTATE_SOURCE = logrotate-$(LOGROTATE_VERSION).tar.gz
+LOGROTATE_VERSION = 3.8.6
 LOGROTATE_SITE = https://www.fedorahosted.org/releases/l/o/logrotate/
 LOGROTATE_LICENSE = GPLv2+
 LOGROTATE_LICENSE_FILES = COPYING

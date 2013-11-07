@@ -1,4 +1,4 @@
-comment "Qt5 needs a toolchain with WCHAR, IPv6, thread and C++ support"
+comment "Qt5 needs a toolchain w/ wchar, IPv6, threads, C++"
 	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_USE_WCHAR || !BR2_INET_IPV6 || !BR2_TOOLCHAIN_HAS_THREADS
 
 menuconfig BR2_PACKAGE_QT5
@@ -22,8 +22,12 @@ source "package/qt5/qt5imageformats/Config.in"
 source "package/qt5/qt5jsbackend/Config.in"
 source "package/qt5/qt5multimedia/Config.in"
 source "package/qt5/qt5quick1/Config.in"
+source "package/qt5/qt5quickcontrols/Config.in"
 source "package/qt5/qt5script/Config.in"
+source "package/qt5/qt5sensors/Config.in"
+source "package/qt5/qt5serialport/Config.in"
 source "package/qt5/qt5svg/Config.in"
 source "package/qt5/qt5webkit/Config.in"
+source "package/qt5/qt5x11extras/Config.in"
 source "package/qt5/qt5xmlpatterns/Config.in"
 endif

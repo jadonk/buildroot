@@ -84,7 +84,7 @@ HOST_UTIL_LINUX_CONF_OPT += \
 	--disable-login --disable-mount --disable-partx \
 	--disable-pivot_root --disable-rename --disable-schedutils \
 	--disable-su --disable-switch_root --disable-unshare \
-	--disable-uuidd --disable-wall
+	--disable-uuidd --disable-wall --without-ncurses
 
 # Avoid building the tools if they are disabled since we can't install on
 # a per-directory basis.
@@ -105,3 +105,4 @@ $(eval $(host-autotools-package))
 # one, so it disappears
 UTIL_LINUX_INSTALL_STAGING_OPT += MKINSTALLDIRS=$(@D)/config/mkinstalldirs
 UTIL_LINUX_INSTALL_TARGET_OPT += MKINSTALLDIRS=$(@D)/config/mkinstalldirs
+HOST_UTIL_LINUX_INSTALL_OPT += MKINSTALLDIRS=$(@D)/config/mkinstalldirs

@@ -235,6 +235,7 @@ config BR2_PACKAGE_COLLECTD_MYSQL
 	bool "mysql"
 	depends on BR2_INSTALL_LIBSTDCPP # mysql
 	depends on BR2_USE_MMU # mysql
+	depends on BR2_TOOLCHAIN_HAS_THREADS # mysql
 	select BR2_PACKAGE_MYSQL_CLIENT
 	help
 	  Connects to a MySQL database and issues a "show status" command.
@@ -275,6 +276,12 @@ config BR2_PACKAGE_COLLECTD_PROTOCOLS
 	bool "protocols"
 	help
 	  Collects information about the network protocols.
+
+config BR2_PACKAGE_COLLECTD_SENSORS
+	bool "sensors"
+	select BR2_PACKAGE_LM_SENSORS
+	help
+	  Collects data from lm-sensors.
 
 config BR2_PACKAGE_COLLECTD_SERIAL
 	bool "serial"
@@ -402,7 +409,7 @@ config BR2_PACKAGE_COLLECTD_RRDTOOL
 	help
 	  Writes values to RRD-files.
 
-comment "rrdtool support requires a toolchain with WCHAR support"
+comment "rrdtool support needs a toolchain w/ wchar"
 	depends on !BR2_USE_WCHAR
 
 config BR2_PACKAGE_COLLECTD_RIEMANN
@@ -428,6 +435,6 @@ endmenu
 
 endif
 
-comment "collectd needs a toolchain with IPv6 and thread support"
+comment "collectd needs a toolchain w/ IPv6, threads"
 	depends on !BR2_TOOLCHAIN_HAS_THREADS || !BR2_INET_IPV6
 	depends on BR2_USE_MMU
