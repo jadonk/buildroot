@@ -1,0 +1,2 @@
+uenvcmd=i2c mw 0x24 1 0x3e;run findfdt;load mmc 0 0x87ff0000 ${fdtfile};load mmc 0 0x80007fc0 uImage;setenv bootargs console=ttyO0,115200n8;bootm 0x80007fc0 - 0x87ff0000
+
