@@ -1,0 +1,8 @@
+config BR2_PACKAGE_BEAGLESNES
+	bool "BeagleSNES"
+	select BR2_PACKAGE_SDL BR2_PACKAGE_SDL_TTF BR2_PACKAGE_SDL_IMAGE BR2_PACKAGE_SDL_MEDIA
+	help
+	  BeagleSNES is a Super Nintendo emulator customized for BeagleBoard-xM
+	  and BeagleBone Black. It is a fork of SNES9X-SDL, v1.53.
+
+	  http://www.beaglesnes.org

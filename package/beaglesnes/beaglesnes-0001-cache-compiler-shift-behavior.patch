@@ -1,0 +1,33 @@
+--- a/sdl/configure.ac	1999-12-31 18:02:20.000000000 -0600
++++ b/sdl/configure.ac	2013-11-25 20:10:52.259517898 -0600
+@@ -240,8 +240,8 @@
+ ])
+ 
+ if test "x$snes9x_cv_sdl" = "xyes"; then
+-  	S9XFLGS="$S9XFLGS `sdl-config --cflags`"
+-	S9XLIBS="$S9XLIBS `sdl-config --libs`"
++  	S9XFLGS="$S9XFLGS `$STAGING_DIR/usr/bin/sdl-config --cflags`"
++	S9XLIBS="$S9XLIBS `$STAGING_DIR/usr/bin/sdl-config --libs`"
+ else
+ 	AC_MSG_ERROR([SDL is required.])
+ fi
+@@ -325,6 +325,10 @@
+ [
+ 	AC_MSG_CHECKING([whether right shift $1 is arithmetic])
+ 
++# Patch to enable cached values
++AC_CACHE_VAL([snes9x_sar_$1],
++[
++
+ 	OLD_CXXFLAGS="[$]CXXFLAGS"
+ 	CXXFLAGS="[$]OLD_CXXFLAGS $snes9x_have_stdint_h"
+ 
+@@ -360,6 +364,8 @@
+ 
+ 	CXXFLAGS="[$]OLD_CXXFLAGS"
+ 
++])
++
+ 	if test "x$snes9x_sar_$1" = "xno"; then
+ 		AC_MSG_RESULT([no])
+ 	else
