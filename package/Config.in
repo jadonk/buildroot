@@ -157,6 +157,7 @@ source "package/xfsprogs/Config.in"
 endmenu
 
 menu "Games"
+source "package/beaglesnes/Config.in"
 source "package/doom-wad/Config.in"
 source "package/gnuchess/Config.in"
 source "package/prboom/Config.in"
