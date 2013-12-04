@@ -22,12 +22,12 @@ Build system requirements
 
 Building
 --------
-
-  git clone git://github.com/jadonk/buildroot && cd buildroot
-  git checkout snes9x
-  make beaglebone_defconfig
-  make
-
+<pre>
+git clone git://github.com/jadonk/buildroot && cd buildroot
+git checkout snes9x
+make beaglebone_defconfig
+make
+</pre>
 
 Booting
 -------
