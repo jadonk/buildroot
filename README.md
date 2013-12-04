@@ -38,3 +38,10 @@ Booting
 * Insert the card into your powered-off BeagleBone Black that already has the gaming
   controller connected and is connected to your TV via the microHDMI cable
 * Hold the boot button and apply power
+
+Legality
+--------
+Downloading ROMs off of the Internet is illegal by the best of my understanding. Please take a read
+of http://www.nintendo.com/corp/legal.jsp. It isn't clear to me if playing using a device to read
+ROMs directly, such as using a http://www.retrode.org/, resolves the legal issues and I appreciate
+any feedback on the matter that I can use to update this README.
