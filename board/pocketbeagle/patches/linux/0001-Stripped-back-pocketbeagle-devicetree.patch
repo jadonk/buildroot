@@ -391,10 +391,10 @@ index 0000000..f9269d6
 +};
 diff --git a/arch/arm/boot/dts/am335x-pocketbeagle.dts b/arch/arm/boot/dts/am335x-pocketbeagle.dts
 new file mode 100644
-index 0000000..b3d92dd
+index 0000000..11d3f90
 --- /dev/null
 +++ b/arch/arm/boot/dts/am335x-pocketbeagle.dts
-@@ -0,0 +1,70 @@
+@@ -0,0 +1,81 @@
 +/*
 + * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
 + *
@@ -406,6 +406,14 @@ index 0000000..b3d92dd
 +
 +#include "am33xx.dtsi"
 +#include "am335x-pocketbeagle-common.dtsi"
++
++&am33xx_pinmux {
++	mma8452_pins: mma8452_pins_default {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x9a0, PIN_INPUT_PULLUP | MUX_MODE7) /* mcasp0_aclkr.gpio3[18] */
++		>;
++	};
++};
 +
 +&spi0 {
 +	#address-cells = <1>;
@@ -455,10 +463,13 @@ index 0000000..b3d92dd
 +	status = "okay";
 +	clock-frequency = <400000>;
 +
++        pinctrl-names = "default";
++        pinctrl-0 = <&mma8452_pins>;
++
 +	mma8452@1c {
 +		compatible = "fsl,mma8452";
 +		reg = <0x1c>;
-+		interrupts-parent = <&gpio3>;
++		interrupt-parent = <&gpio3>;
 +		interrupts = <18 0>;
 +		interrupt-names = "INT2";
 +	};
