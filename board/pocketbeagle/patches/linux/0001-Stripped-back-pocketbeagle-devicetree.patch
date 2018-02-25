@@ -1,22 +1,8 @@
-From 6cb79aa18a400e666c0ac0ac2dec5d9ce6953d67 Mon Sep 17 00:00:00 2001
-From: Michael Welling <mwelling@ieee.org>
-Date: Fri, 26 Jan 2018 02:04:20 -0600
-Subject: [PATCH] Stripped back pocketbeagle devicetree
-
-Signed-off-by: Michael Welling <mwelling@ieee.org>
----
- arch/arm/boot/dts/Makefile                        |   1 +
- arch/arm/boot/dts/am335x-pocketbeagle-common.dtsi | 364 ++++++++++++++++++++++
- arch/arm/boot/dts/am335x-pocketbeagle.dts         |  56 ++++
- 3 files changed, 421 insertions(+)
- create mode 100644 arch/arm/boot/dts/am335x-pocketbeagle-common.dtsi
- create mode 100644 arch/arm/boot/dts/am335x-pocketbeagle.dts
-
 diff --git a/arch/arm/boot/dts/Makefile b/arch/arm/boot/dts/Makefile
-index d0381e9caf21..742ac905d04e 100644
+index eff87a3..5a5b055 100644
 --- a/arch/arm/boot/dts/Makefile
 +++ b/arch/arm/boot/dts/Makefile
-@@ -654,6 +654,7 @@ dtb-$(CONFIG_SOC_AM33XX) += \
+@@ -629,6 +629,7 @@ dtb-$(CONFIG_SOC_AM33XX) += \
  	am335x-nano.dtb \
  	am335x-pepper.dtb \
  	am335x-phycore-rdk.dtb \
@@ -26,10 +12,10 @@ index d0381e9caf21..742ac905d04e 100644
  	am335x-sl50.dtb \
 diff --git a/arch/arm/boot/dts/am335x-pocketbeagle-common.dtsi b/arch/arm/boot/dts/am335x-pocketbeagle-common.dtsi
 new file mode 100644
-index 000000000000..cacc65d60272
+index 0000000..f9269d6
 --- /dev/null
 +++ b/arch/arm/boot/dts/am335x-pocketbeagle-common.dtsi
-@@ -0,0 +1,364 @@
+@@ -0,0 +1,373 @@
 +/*
 + * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
 + *
@@ -143,6 +129,15 @@ index 000000000000..cacc65d60272
 +	mmc0_pins: pinmux_mmc0_pins {
 +		pinctrl-single,pins = <
 +			AM33XX_IOPAD(0x0960, PIN_INPUT | MUX_MODE7) /* GPIO0_6 */
++		>;
++	};
++
++	spi1_pins: pinmux_spi1_pins {
++		pinctrl-single,pins = <
++			AM33XX_IOPAD(0x096c, PIN_OUTPUT_PULLUP | INPUT_EN | MUX_MODE4)	/* uart0_rtsn.spi1_d1 */
++			AM33XX_IOPAD(0x0968, PIN_OUTPUT_PULLUP | INPUT_EN | MUX_MODE4)	/* uart0_ctsn.spi1_d0 */
++			AM33XX_IOPAD(0x0964, PIN_OUTPUT_PULLUP | INPUT_EN | MUX_MODE4)	/* eCAP0_in_PWM0_out.spi1_sclk */
++			AM33XX_IOPAD(0x09b0, PIN_OUTPUT_PULLUP | INPUT_EN | MUX_MODE4)	/* xdma_event_intr0.spi1_cs1 */
 +		>;
 +	};
 +};
@@ -396,10 +391,10 @@ index 000000000000..cacc65d60272
 +};
 diff --git a/arch/arm/boot/dts/am335x-pocketbeagle.dts b/arch/arm/boot/dts/am335x-pocketbeagle.dts
 new file mode 100644
-index 000000000000..44f2ef3ddf89
+index 0000000..b3d92dd
 --- /dev/null
 +++ b/arch/arm/boot/dts/am335x-pocketbeagle.dts
-@@ -0,0 +1,56 @@
+@@ -0,0 +1,70 @@
 +/*
 + * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
 + *
@@ -440,22 +435,33 @@ index 000000000000..44f2ef3ddf89
 +	#size-cells = <0>;
 +	status = "okay";
 +
-+	channel@0 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "spidev";
-+		reg = <0>;
-+		spi-max-frequency = <24000000>;
-+	};
++	pinctrl-names = "default";
++	pinctrl-0 = <&spi1_pins>;
 +
-+	channel@1 {
++	mcp23s18@1 {
 +		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "spidev";
++		#size-cells = <1>;
++		compatible = "microchip,mcp23s18";
++		gpio-controller;
++		microchip,spi-present-mask = <0x01>;
 +		reg = <1>;
-+		spi-max-frequency = <24000000>;
++		spi-max-frequency = <1000000>;
 +	};
 +};
--- 
-2.11.0
-
++
++&i2c2 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++	status = "okay";
++	clock-frequency = <400000>;
++
++	mma8452@1c {
++		compatible = "fsl,mma8452";
++		reg = <0x1c>;
++		interrupts-parent = <&gpio3>;
++		interrupts = <18 0>;
++		interrupt-names = "INT2";
++	};
++};
++
++
