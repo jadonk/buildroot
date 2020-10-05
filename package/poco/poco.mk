@@ -4,8 +4,8 @@
 #
 ################################################################################
 
-POCO_VERSION = poco-1.8.1-release
-POCO_SITE = $(call github,pocoproject,poco,$(POCO_VERSION))
+POCO_VERSION = 1.10.1
+POCO_SITE = $(call github,pocoproject,poco,poco-$(POCO_VERSION)-release)
 POCO_LICENSE = BSL-1.0
 POCO_LICENSE_FILES = LICENSE
 POCO_INSTALL_STAGING = YES
@@ -18,15 +18,21 @@ POCO_DEPENDENCIES = zlib pcre \
 	$(if $(BR2_PACKAGE_POCO_DATA_MYSQL),mysql)
 
 POCO_OMIT = Data/ODBC PageCompiler \
+	$(if $(BR2_PACKAGE_POCO_JSON),,JSON) \
 	$(if $(BR2_PACKAGE_POCO_XML),,XML) \
 	$(if $(BR2_PACKAGE_POCO_UTIL),,Util) \
 	$(if $(BR2_PACKAGE_POCO_NET),,Net) \
 	$(if $(BR2_PACKAGE_POCO_NETSSL_OPENSSL),,NetSSL_OpenSSL) \
 	$(if $(BR2_PACKAGE_POCO_CRYPTO),,Crypto) \
 	$(if $(BR2_PACKAGE_POCO_ZIP),,Zip) \
+	$(if $(BR2_PACKAGE_POCO_CPP_PARSER),,CppParser) \
+	$(if $(BR2_PACKAGE_POCO_PDF),,PDF) \
+	$(if $(BR2_PACKAGE_POCO_REDIS),,Redis) \
+	$(if $(BR2_PACKAGE_POCO_MONGODB),,MongoDB) \
 	$(if $(BR2_PACKAGE_POCO_DATA),,Data) \
 	$(if $(BR2_PACKAGE_POCO_DATA_MYSQL),,Data/MySQL) \
-	$(if $(BR2_PACKAGE_POCO_DATA_SQLITE),,Data/SQLite)
+	$(if $(BR2_PACKAGE_POCO_DATA_SQLITE),,Data/SQLite) \
+	$(if $(BR2_PACKAGE_POCO_JWT),,JWT)
 
 ifeq ($(BR2_TOOLCHAIN_USES_UCLIBC),y)
 POCO_CONF_OPTS += --no-fpenvironment --no-wstring
@@ -34,6 +40,11 @@ endif
 
 # architectures missing some FE_* in their fenv.h
 ifeq ($(BR2_sh4a)$(BR2_nios2),y)
+POCO_CONF_OPTS += --no-fpenvironment
+endif
+
+# disable fpenvironment for soft floating point configuration
+ifeq ($(BR2_SOFT_FLOAT),y)
 POCO_CONF_OPTS += --no-fpenvironment
 endif
 
@@ -49,6 +60,7 @@ define POCO_CONFIGURE_CMDS
 	(cd $(@D); $(TARGET_MAKE_ENV) ./configure \
 		--config=Linux \
 		--prefix=/usr \
+		--cflags=-std=c++14 \
 		--omit="$(POCO_OMIT)" \
 		$(POCO_CONF_OPTS) \
 		--unbundled \

@@ -4,12 +4,13 @@
 #
 ################################################################################
 
-WINE_VERSION = 3.0
+WINE_VERSION = 5.12
 WINE_SOURCE = wine-$(WINE_VERSION).tar.xz
-WINE_SITE = https://dl.winehq.org/wine/source/3.0
+WINE_SITE = https://dl.winehq.org/wine/source/5.x
 WINE_LICENSE = LGPL-2.1+
 WINE_LICENSE_FILES = COPYING.LIB LICENSE
 WINE_DEPENDENCIES = host-bison host-flex host-wine
+HOST_WINE_DEPENDENCIES = host-bison host-flex
 
 # Wine needs its own directory structure and tools for cross compiling
 WINE_CONF_OPTS = \
@@ -18,14 +19,16 @@ WINE_CONF_OPTS = \
 	--disable-win64 \
 	--without-capi \
 	--without-coreaudio \
+	--without-faudio \
 	--without-gettext \
 	--without-gettextpo \
 	--without-gphoto \
 	--without-gsm \
 	--without-hal \
-	--without-krb5 \
 	--without-opencl \
-	--without-oss
+	--without-oss \
+	--without-vkd3d \
+	--without-vulkan
 
 # Wine uses a wrapper around gcc, and uses the value of --host to
 # construct the filename of the gcc to call.  But for external
@@ -121,6 +124,13 @@ else
 WINE_CONF_OPTS += --without-glu
 endif
 
+ifeq ($(BR2_PACKAGE_LIBKRB5),y)
+WINE_CONF_OPTS += --with-krb5
+WINE_DEPENDENCIES += libkrb5
+else
+WINE_CONF_OPTS += --without-krb5
+endif
+
 ifeq ($(BR2_PACKAGE_LIBPCAP),y)
 WINE_CONF_OPTS += --with-pcap
 WINE_DEPENDENCIES += libpcap
@@ -186,7 +196,7 @@ else
 WINE_CONF_OPTS += --without-ldap
 endif
 
-ifeq ($(BR2_PACKAGE_MESA3D_OSMESA),y)
+ifeq ($(BR2_PACKAGE_MESA3D_OSMESA_CLASSIC),y)
 WINE_CONF_OPTS += --with-osmesa
 WINE_DEPENDENCIES += mesa3d
 else
@@ -213,6 +223,13 @@ WINE_DEPENDENCIES += sane-backends
 WINE_CONF_ENV += SANE_CONFIG=$(STAGING_DIR)/usr/bin/sane-config
 else
 WINE_CONF_OPTS += --without-sane
+endif
+
+ifeq ($(BR2_PACKAGE_SDL2),y)
+WINE_CONF_OPTS += --with-sdl
+WINE_DEPENDENCIES += sdl2
+else
+WINE_CONF_OPTS += --without-sdl
 endif
 
 ifeq ($(BR2_PACKAGE_TIFF),y)
@@ -300,8 +317,12 @@ WINE_CONF_OPTS += --without-zlib
 endif
 
 # host-gettext is essential for .po file support in host-wine wrc
+ifeq ($(BR2_SYSTEM_ENABLE_NLS),y)
 HOST_WINE_DEPENDENCIES += host-gettext
 HOST_WINE_CONF_OPTS += --with-gettext --with-gettextpo
+else
+HOST_WINE_CONF_OPTS += --without-gettext --without-gettextpo
+endif
 
 # Wine needs to enable 64-bit build tools on 64-bit host
 ifeq ($(HOSTARCH),x86_64)
@@ -337,6 +358,7 @@ HOST_WINE_CONF_OPTS += \
 	--without-capi \
 	--without-cms \
 	--without-coreaudio \
+	--without-faudio \
 	--without-cups \
 	--without-curses \
 	--without-dbus \
@@ -345,6 +367,7 @@ HOST_WINE_CONF_OPTS += \
 	--without-glu \
 	--without-gnutls \
 	--without-gsm \
+	--without-gssapi \
 	--without-gstreamer \
 	--without-hal \
 	--without-jpeg \
@@ -361,8 +384,11 @@ HOST_WINE_CONF_OPTS += \
 	--without-pulse \
 	--without-png \
 	--without-sane \
+	--without-sdl \
 	--without-tiff \
 	--without-v4l \
+	--without-vkd3d \
+	--without-vulkan \
 	--without-x \
 	--without-xcomposite \
 	--without-xcursor \

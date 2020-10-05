@@ -1,3 +1,8 @@
-# Hashes from: http://the.earth.li/~sgtatham/putty/0.70/{sha256,sha512}sums
-sha256 bb8aa49d6e96c5a8e18a057f3150a1695ed99a24eef699e783651d1f24e7b0be                                                                 putty-0.70.tar.gz
-sha512 2aaf4fa2b4ad2d82eb5cdc4419ade79e0c5d8bd3c093db92b3c048e6107f85a5f1647f9d8203cda0906ce2b926725a75319f981cb32e6f1ebf50b1f738564fed putty-0.70.tar.gz
+# Hashes from: http://the.earth.li/~sgtatham/putty/0.74/{md5,sha1,sha256,sha512}sums
+md5  dbfa58f22a91b22b7489173e9dd09e30  putty-0.74.tar.gz
+sha1  17b160e9720f67f9af9399d7d185b913b81f18fe  putty-0.74.tar.gz
+sha256  ddd5d388e51dd9e6e294005b30037f6ae802239a44c9dc9808c779e6d11b847d  putty-0.74.tar.gz
+sha512  0da86849ea764cd88643bd2c1984ac7211ae72dd7c41232307b1960a29ca9518044b022d87c60272d6db71a3357026862a112bedb90ee732b41494fca3acde9b  putty-0.74.tar.gz
+
+# Locally calculated
+sha256  92028b6d56212bd3e4ce6a36bd2e2454851dca7e8ffe4c6ab51385ca214ca322  LICENCE

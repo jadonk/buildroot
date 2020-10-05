@@ -1,2 +1,4 @@
-# From http://gondor.apana.org.au/~herbert/dash/files/dash-0.5.9.1.tar.gz.sha256sum
-sha256	5ecd5bea72a93ed10eb15a1be9951dd51b52e5da1d4a7ae020efd9826b49e659	dash-0.5.9.1.tar.gz
+# From http://gondor.apana.org.au/~herbert/dash/files/dash-0.5.11.2.tar.gz.sha256sum
+sha256  00fb7d68b7599cc41ab151051c06c01e9500540183d8aa72116cb9c742bd6d5f  dash-0.5.11.2.tar.gz
+# Locally calculated
+sha256  254a7894923ff62e69184a991dcbccae97edee58a1105e8efbe78caf10595d72  COPYING

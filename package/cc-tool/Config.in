@@ -9,13 +9,12 @@ config BR2_PACKAGE_CC_TOOL
 	select BR2_PACKAGE_BOOST_SYSTEM
 	select BR2_PACKAGE_BOOST_REGEX
 	select BR2_PACKAGE_BOOST_FILESYSTEM
-	select BR2_PACKAGE_BOOST_SIGNALS
 	help
 	  cc-tool provides support for Texas Instruments CC Debugger
 	  for Linux OS in order to program 8051-based System-On-Chip
 	  devices: CC254x CC253x CC243x CC251x CC111x
 
-	  http://sourceforge.net/projects/cctool/
+	  https://github.com/dashesy/cc-tool/
 
 comment "cc-tool needs a toolchain w/ C++, threads, wchar"
 	depends on !BR2_INSTALL_LIBSTDCPP || !BR2_TOOLCHAIN_HAS_THREADS || !BR2_USE_WCHAR

@@ -4,7 +4,9 @@
 from __future__ import print_function
 import argparse
 import inspect
+import os
 import re
+import six
 import sys
 
 import checkpackagelib.lib_config
@@ -24,10 +26,14 @@ def parse_args():
     parser.add_argument("files", metavar="F", type=str, nargs="*",
                         help="list of files")
 
+    parser.add_argument("--br2-external", "-b", dest='intree_only', action="store_false",
+                        help="do not apply the pathname filters used for intree files")
+
     parser.add_argument("--manual-url", action="store",
                         default="http://nightly.buildroot.org/",
                         help="default: %(default)s")
     parser.add_argument("--verbose", "-v", action="count", default=0)
+    parser.add_argument("--quiet", "-q", action="count", default=0)
 
     # Now the debug options in the order they are processed.
     parser.add_argument("--include-only", dest="include_list", action="append",
@@ -40,13 +46,37 @@ def parse_args():
     return parser.parse_args()
 
 
-CONFIG_IN_FILENAME = re.compile("/Config\.\S*$")
-FILE_IS_FROM_A_PACKAGE = re.compile("package/[^/]*/")
+CONFIG_IN_FILENAME = re.compile(r"Config\.\S*$")
+DO_CHECK_INTREE = re.compile(r"|".join([
+    r"Config.in",
+    r"arch/",
+    r"boot/",
+    r"fs/",
+    r"linux/",
+    r"package/",
+    r"system/",
+    r"toolchain/",
+    ]))
+DO_NOT_CHECK_INTREE = re.compile(r"|".join([
+    r"boot/barebox/barebox\.mk$",
+    r"fs/common\.mk$",
+    r"package/doc-asciidoc\.mk$",
+    r"package/pkg-\S*\.mk$",
+    r"toolchain/helpers\.mk$",
+    r"toolchain/toolchain-external/pkg-toolchain-external\.mk$",
+    ]))
 
 
 def get_lib_from_filename(fname):
-    if FILE_IS_FROM_A_PACKAGE.search(fname) is None:
-        return None
+    if flags.intree_only:
+        if DO_CHECK_INTREE.match(fname) is None:
+            return None
+        if DO_NOT_CHECK_INTREE.match(fname):
+            return None
+    else:
+        if os.path.basename(fname) == "external.mk" and \
+           os.path.exists(fname[:-2] + "desc"):
+            return None
     if CONFIG_IN_FILENAME.search(fname):
         return checkpackagelib.lib_config
     if fname.endswith(".hash"):
@@ -103,10 +133,19 @@ def check_file_using_lib(fname):
 
     for cf in objects:
         nwarnings += print_warnings(cf.before())
-    for lineno, text in enumerate(open(fname, "r").readlines()):
+    if six.PY3:
+        f = open(fname, "r", errors="surrogateescape")
+    else:
+        f = open(fname, "r")
+    lastline = ""
+    for lineno, text in enumerate(f.readlines()):
         nlines += 1
         for cf in objects:
+            if cf.disable.search(lastline):
+                continue
             nwarnings += print_warnings(cf.check_line(lineno + 1, text))
+        lastline = text
+    f.close()
     for cf in objects:
         nwarnings += print_warnings(cf.after())
 
@@ -117,7 +156,16 @@ def __main__():
     global flags
     flags = parse_args()
 
-    if len(flags.files) == 0:
+    if flags.intree_only:
+        # change all paths received to be relative to the base dir
+        base_dir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+        files_to_check = [os.path.relpath(os.path.abspath(f), base_dir) for f in flags.files]
+        # move current dir so the script find the files
+        os.chdir(base_dir)
+    else:
+        files_to_check = flags.files
+
+    if len(files_to_check) == 0:
         print("No files to check style")
         sys.exit(1)
 
@@ -125,7 +173,7 @@ def __main__():
     total_warnings = 0
     total_lines = 0
 
-    for fname in flags.files:
+    for fname in files_to_check:
         nwarnings, nlines = check_file_using_lib(fname)
         total_warnings += nwarnings
         total_lines += nlines
@@ -134,8 +182,10 @@ def __main__():
     # (e.g. counted by 'wc'), so for stats use stderr. Wait all warnings are
     # printed, for the case there are many of them, before printing stats.
     sys.stdout.flush()
-    print("{} lines processed".format(total_lines), file=sys.stderr)
-    print("{} warnings generated".format(total_warnings), file=sys.stderr)
+
+    if not flags.quiet:
+        print("{} lines processed".format(total_lines), file=sys.stderr)
+        print("{} warnings generated".format(total_warnings), file=sys.stderr)
 
     if total_warnings > 0:
         sys.exit(1)

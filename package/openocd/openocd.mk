@@ -17,7 +17,7 @@ OPENOCD_CONF_OPTS = \
 	--oldincludedir=$(STAGING_DIR)/usr/include \
 	--includedir=$(STAGING_DIR)/usr/include \
 	--disable-doxygen-html \
-	--with-jim-shared=no \
+	--disable-internal-jimtcl \
 	--disable-shared \
 	--enable-dummy \
 	--disable-werror
@@ -26,10 +26,13 @@ OPENOCD_CONF_OPTS = \
 # the dependencies they need.
 
 OPENOCD_DEPENDENCIES = \
+	host-pkgconf \
+	jimtcl \
 	$(if $(BR2_PACKAGE_LIBFTDI1),libftdi1) \
 	$(if $(BR2_PACKAGE_LIBUSB),libusb) \
 	$(if $(BR2_PACKAGE_LIBUSB_COMPAT),libusb-compat) \
-	$(if $(BR2_PACKAGE_LIBHID),libhid)
+	$(if $(BR2_PACKAGE_LIBHID),libhid) \
+	$(if $(BR2_PACKAGE_HIDAPI),hidapi)
 
 # Adapters
 OPENOCD_CONF_OPTS += \
@@ -94,12 +97,12 @@ HOST_OPENOCD_CONF_OPTS = \
 	--oldincludedir=$(HOST_DIR)/include \
 	--includedir=$(HOST_DIR)/include \
 	--disable-doxygen-html \
-	--with-jim-shared=no \
+	--disable-internal-jimtcl \
 	--disable-shared \
 	--enable-dummy \
 	--disable-werror
 
-HOST_OPENOCD_DEPENDENCIES = host-libftdi host-libusb host-libusb-compat
+HOST_OPENOCD_DEPENDENCIES = host-jimtcl host-libftdi host-libusb host-libusb-compat
 
 # Avoid documentation rebuild. On PowerPC64(le), we patch the
 # configure script. Due to this, the version.texi files gets

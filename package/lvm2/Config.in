@@ -3,6 +3,7 @@ config BR2_PACKAGE_LVM2
 	depends on BR2_TOOLCHAIN_HAS_THREADS
 	depends on BR2_USE_MMU # needs fork()
 	depends on !BR2_STATIC_LIBS # It fails to build statically
+	select BR2_PACKAGE_LIBAIO
 	help
 	  This is LVM2, the rewrite of The Linux Logical Volume Manager.
 	  LVM supports enterprise level volume management of disk and
@@ -44,6 +45,23 @@ config BR2_PACKAGE_LVM2_APP_LIBRARY
 	  Install application library (liblvm2app).
 
 comment "lvm2 application library needs a glibc or uClibc toolchain"
+	depends on BR2_TOOLCHAIN_USES_MUSL
+
+config BR2_PACKAGE_LVM2_LVMETAD
+	bool "install lvmetad"
+	depends on !BR2_TOOLCHAIN_USES_MUSL # lvm2-app-library
+	select BR2_PACKAGE_LVM2_APP_LIBRARY
+	help
+	  Install lvmetad
+
+	  The lvmetad daemon caches LVM metadata so that LVM commands
+	  can read metadata from the cache rather than scanning disks.
+	  This can be an advantage because scanning disks is time
+	  consuming and may interfere with the normal work of the
+	  system.  lvmetad can be a disadvantage when disk event
+	  notifications from the system are unreliable.
+
+comment "lvmetad daemon needs a glibc or uClibc toolchain"
 	depends on BR2_TOOLCHAIN_USES_MUSL
 
 endif

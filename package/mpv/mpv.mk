@@ -4,14 +4,13 @@
 #
 ################################################################################
 
-MPV_VERSION = 0.27.2
-MPV_SITE = https://github.com/mpv-player/mpv/archive
-MPV_SOURCE = v$(MPV_VERSION).tar.gz
+MPV_VERSION = 0.32.0
+MPV_SITE = $(call github,mpv-player,mpv,v$(MPV_VERSION))
 MPV_DEPENDENCIES = \
 	host-pkgconf ffmpeg zlib \
 	$(if $(BR2_PACKAGE_LIBICONV),libiconv)
 MPV_LICENSE = GPL-2.0+
-MPV_LICENSE_FILES = LICENSE
+MPV_LICENSE_FILES = LICENSE.GPL
 
 MPV_NEEDS_EXTERNAL_WAF = YES
 
@@ -20,19 +19,14 @@ MPV_CONF_OPTS = \
 	--prefix=/usr \
 	--disable-android \
 	--disable-caca \
-	--disable-cdda \
 	--disable-cocoa \
 	--disable-coreaudio \
 	--disable-cuda-hwaccel \
-	--disable-libv4l2 \
 	--disable-opensles \
 	--disable-rsound \
 	--disable-rubberband \
 	--disable-uchardet \
-	--disable-vapoursynth \
-	--disable-vapoursynth-lazy \
-	--disable-vdpau \
-	--disable-mali-fbdev
+	--disable-vapoursynth
 
 # ALSA support requires pcm+mixer
 ifeq ($(BR2_PACKAGE_ALSA_LIB_MIXER)$(BR2_PACKAGE_ALSA_LIB_PCM),yy)
@@ -99,20 +93,20 @@ else
 MPV_CONF_OPTS += --disable-libbluray
 endif
 
+# libcdio-paranoia
+ifeq ($(BR2_PACKAGE_LIBCDIO_PARANOIA),y)
+MPV_CONF_OPTS += --enable-cdda
+MPV_DEPENDENCIES += libcdio-paranoia
+else
+MPV_CONF_OPTS += --disable-cdda
+endif
+
 # libdvdnav
 ifeq ($(BR2_PACKAGE_LIBDVDNAV),y)
 MPV_CONF_OPTS += --enable-dvdnav
 MPV_DEPENDENCIES += libdvdnav
 else
 MPV_CONF_OPTS += --disable-dvdnav
-endif
-
-# libdvdread
-ifeq ($(BR2_PACKAGE_LIBDVDREAD),y)
-MPV_CONF_OPTS += --enable-dvdread
-MPV_DEPENDENCIES += libdvdread
-else
-MPV_CONF_OPTS += --disable-dvdread
 endif
 
 # libdrm
@@ -123,9 +117,17 @@ else
 MPV_CONF_OPTS += --disable-drm
 endif
 
+# libvdpau
+ifeq ($(BR2_PACKAGE_LIBVDPAU),y)
+MPV_CONF_OPTS += --enable-vdpau
+MPV_DEPENDENCIES += libvdpau
+else
+MPV_CONF_OPTS += --disable-vdpau
+endif
+
 # LUA support, only for lua51/lua52/luajit
 # This enables the controller (OSD) together with libass
-ifeq ($(BR2_PACKAGE_LUA_5_1)$(BR2_PACKAGE_LUA_5_2)$(BR2_PACKAGE_LUAJIT),y)
+ifeq ($(BR2_PACKAGE_LUA_5_1)$(BR2_PACKAGE_LUAJIT),y)
 MPV_CONF_OPTS += --enable-lua
 MPV_DEPENDENCIES += luainterpreter
 else
@@ -157,16 +159,12 @@ MPV_CONF_OPTS += --disable-libsmbclient
 endif
 
 # SDL support
-# Both can't be used at the same time, prefer newer API
-# It also requires 64-bit sync intrinsics
+# Sdl2 requires 64-bit sync intrinsics
 ifeq ($(BR2_TOOLCHAIN_HAS_SYNC_8)$(BR2_PACKAGE_SDL2),yy)
-MPV_CONF_OPTS += --enable-sdl2 --disable-sdl1
+MPV_CONF_OPTS += --enable-sdl2
 MPV_DEPENDENCIES += sdl2
-else ifeq ($(BR2_TOOLCHAIN_HAS_SYNC_8)$(BR2_PACKAGE_SDL),yy)
-MPV_CONF_OPTS += --enable-sdl1 --disable-sdl2
-MPV_DEPENDENCIES += sdl
 else
-MPV_CONF_OPTS += --disable-sdl1 --disable-sdl2
+MPV_CONF_OPTS += --disable-sdl2
 endif
 
 # Raspberry Pi support
@@ -194,7 +192,7 @@ endif
 # wayland support
 ifeq ($(BR2_PACKAGE_WAYLAND),y)
 MPV_CONF_OPTS += --enable-wayland
-MPV_DEPENDENCIES += libxkbcommon wayland
+MPV_DEPENDENCIES += libxkbcommon wayland wayland-protocols
 else
 MPV_CONF_OPTS += --disable-wayland
 endif
@@ -214,6 +212,10 @@ MPV_CONF_OPTS += --disable-xv
 endif
 else
 MPV_CONF_OPTS += --disable-x11
+endif
+
+ifeq ($(BR2_TOOLCHAIN_HAS_LIBATOMIC),y)
+MPV_CONF_ENV += LDFLAGS="$(TARGET_LDFLAGS) -latomic"
 endif
 
 $(eval $(waf-package))
